@@ -17,6 +17,8 @@ import { ProcessConfig, WordPair } from '../../types/models';
 export class SettingsComponent implements OnInit, OnDestroy {
   config!: ProcessConfig;
   error = '';
+  loadingSource = false;
+  loadingDest = false;
   private sub!: Subscription;
 
   constructor(
@@ -34,6 +36,38 @@ export class SettingsComponent implements OnInit, OnDestroy {
     this.sub.unsubscribe();
   }
 
+  /** Ouvre le dialog Tauri pour choisir un dossier source */
+  async selectSource() {
+    this.loadingSource = true;
+    try {
+      const { open } = await import('@tauri-apps/api/dialog');
+      const selected = (await open({ directory: true })) as string | null;
+      if (selected) {
+        this.config.source = selected;
+      }
+    } catch {
+      this.error = 'Impossible de sélectionner le dossier source.';
+    } finally {
+      this.loadingSource = false;
+    }
+  }
+
+  /** Ouvre le dialog Tauri pour choisir un dossier destination */
+  async selectDestination() {
+    this.loadingDest = true;
+    try {
+      const { open } = await import('@tauri-apps/api/dialog');
+      const selected = (await open({ directory: true })) as string | null;
+      if (selected) {
+        this.config.destination = selected;
+      }
+    } catch {
+      this.error = 'Impossible de sélectionner le dossier de destination.';
+    } finally {
+      this.loadingDest = false;
+    }
+  }
+
   addPair() {
     this.config.pairs.push({ old: '', new: '' });
   }
@@ -42,17 +76,22 @@ export class SettingsComponent implements OnInit, OnDestroy {
     this.config.pairs.splice(i, 1);
   }
 
-  generateVariants() {
+  /** Génère les variantes lower/upper pour toutes les paires actuelles */
+  generatePairsVariants() {
     const seen = new Set<string>();
     const out: WordPair[] = [];
     for (let wp of this.config.pairs) {
       ['orig', 'lower', 'upper'].forEach(mode => {
-        let o = mode==='lower' ? wp.old.toLowerCase()
-              : mode==='upper' ? wp.old.toUpperCase()
-              : wp.old;
-        let n = mode==='lower' ? wp.new.toLowerCase()
-              : mode==='upper' ? wp.new.toUpperCase()
-              : wp.new;
+        const o = mode === 'lower'
+          ? wp.old.toLowerCase()
+          : mode === 'upper'
+            ? wp.old.toUpperCase()
+            : wp.old;
+        const n = mode === 'lower'
+          ? wp.new.toLowerCase()
+          : mode === 'upper'
+            ? wp.new.toUpperCase()
+            : wp.new;
         const key = `${o}→${n}`;
         if (o && !seen.has(key)) {
           seen.add(key);
@@ -63,19 +102,20 @@ export class SettingsComponent implements OnInit, OnDestroy {
     this.config.pairs = out;
   }
 
+  /** Validation minimale avant de passer à l’étape suivante */
   canProceed(): boolean {
     return !!this.config.source
         && !!this.config.destination
         && this.config.pairs.length > 0
-        && this.config.pairs.every(wp => wp.old && wp.new);
+        && this.config.pairs.every(wp => wp.old.trim() && wp.new.trim());
   }
 
   next() {
     if (!this.canProceed()) {
-      this.error = 'Veuillez renseigner source, destination et au moins une paire complète.';
+      this.error = 'Source, destination et paires (Old/New) obligatoires.';
       return;
     }
-    // Appliquer au state
+    // Sauvegarde dans le state
     this.wizard.updateConfig({
       source: this.config.source,
       destination: this.config.destination,

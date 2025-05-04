@@ -2,7 +2,7 @@
 //! renvoie une liste décrivant chaque entrée et ses occurrences.
 
 use std::{fs, path::PathBuf};
-use tauri::{command, Window};
+use tauri::{command, Window, Emitter};
 use walkdir::WalkDir;
 
 use crate::{
@@ -23,7 +23,7 @@ pub fn diagnose_robber(
 ) -> Result<Vec<DiagnosticEntry>, String> {
     let src = PathBuf::from(&config.source);
 
-    // Services de filtrage
+    // Service de filtrage
     let fm = FileManager::new(vec![
         ".png".into(),
         ".jpg".into(),
@@ -33,17 +33,14 @@ pub fn diagnose_robber(
         ".woff2".into(),
     ]);
 
-    // Prépare les paires (avec variantes si demandé)
+    // Prépare les paires, avec variantes si demandé
     let mut pairs = config.pairs.clone();
     if config.variants {
         pairs = TextService::expand_variants(&pairs);
     }
 
     // Collecte toutes les entrées à parcourir
-    let entries: Vec<_> = WalkDir::new(&src)
-        .into_iter()
-        .filter_map(Result::ok)
-        .collect();
+    let entries: Vec<_> = WalkDir::new(&src).into_iter().filter_map(Result::ok).collect();
     let total = entries.len() as u32;
     let mut processed = 0u32;
 

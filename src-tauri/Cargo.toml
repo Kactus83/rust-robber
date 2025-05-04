@@ -1,7 +1,7 @@
 [package]
 name = "project-robber"
 version = "0.1.0"
-edition = "2025"
+edition = "2024"
 
 [build-dependencies]
 tauri-build = { version = "2.0.6", features = [] }
@@ -20,7 +20,7 @@ tauri-plugin-log = "2.2.3"
 tempfile = "3.5.0"
 walkdir = "2.3"
 regex = "1.9"
-chrono = { version = "0.4", features = ["local"] }
+chrono = "0.4"
 
 [[bin]]
 name = "setup-wizard"

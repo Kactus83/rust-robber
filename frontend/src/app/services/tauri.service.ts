@@ -1,30 +1,46 @@
 import { Injectable, EventEmitter } from '@angular/core';
-import { invoke } from '@tauri-apps/api/tauri';
-import { listen } from '@tauri-apps/api/event';
-import { ProcessConfig } from '../types/models';
+import type { ProcessConfig, DiagnosticEntry } from '../types/models';
 
 @Injectable({ providedIn: 'root' })
 export class TauriService {
-  // événements de progression
-  diagnoseProgress$ = new EventEmitter<number>();
-  runProgress$ = new EventEmitter<number>();
+  private _invoke!: (cmd: string, args?: Record<string, unknown>) => Promise<unknown>;
+
+  /** Progrès du diagnostic (0–100) */
+  public diagnoseProgress$ = new EventEmitter<number>();
+  /** Progrès du run (0–100) */
+  public runProgress$ = new EventEmitter<number>();
 
   constructor() {
-    listen<number>('diagnose-progress', e => {
-      this.diagnoseProgress$.emit(e.payload);
+    // charge dynamiquement listen depuis l’API Tauri
+    import('@tauri-apps/api/event').then(mod => {
+      mod.listen<number>('diagnose-progress', e => this.diagnoseProgress$.emit(e.payload));
+      mod.listen<number>('robber-progress',  e => this.runProgress$.emit(e.payload));
     });
-    listen<number>('robber-progress', e => {
-      this.runProgress$.emit(e.payload);
+
+    // charge dynamiquement invoke depuis core
+    import('@tauri-apps/api/core').then(mod => {
+      if (!mod.invoke) {
+        console.error('invoke introuvable dans @tauri-apps/api/core');
+      }
+      this._invoke = mod.invoke;
+    }).catch(err => {
+      console.error('Échec import @tauri-apps/api/core', err);
     });
   }
 
-  // Diagnostique "à blanc" (report)
-  async diagnoseRobber(config: ProcessConfig): Promise<any> {
-    return invoke<any[]>('diagnose_robber', { config });
+  /** Lance le diagnostic “à blanc”. */
+  async diagnoseRobber(config: ProcessConfig): Promise<DiagnosticEntry[]> {
+    if (!this._invoke) {
+      throw new Error('Tauri invoke non chargé');
+    }
+    return (this._invoke('diagnose_robber', { config }) as Promise<DiagnosticEntry[]>);
   }
 
-  // Exécution finale
+  /** Lance le traitement principal. */
   async runRobber(config: ProcessConfig): Promise<string> {
-    return invoke<string>('run_robber', { config });
+    if (!this._invoke) {
+      throw new Error('Tauri invoke non chargé');
+    }
+    return (this._invoke('run_robber', { config }) as Promise<string>);
   }
 }

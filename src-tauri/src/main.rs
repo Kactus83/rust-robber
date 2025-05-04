@@ -6,7 +6,6 @@ mod commands;
 mod config;
 mod services;
 mod types;
-mod state;
 
 use tauri::Manager;
 use tauri_plugin_log::Builder;

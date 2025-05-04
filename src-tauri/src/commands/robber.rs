@@ -1,9 +1,8 @@
 //! Commande Tauri exposée : exécute le traitement complet "Project Robber".
 
-use anyhow::Context;
 use chrono::Local;
 use std::{fs, path::PathBuf};
-use tauri::{command, Window};
+use tauri::{command, Window, Emitter};
 use walkdir::WalkDir;
 
 use crate::{
@@ -15,10 +14,11 @@ use crate::{
 /// Émet des events "robber-progress" (0–100) pendant le remplacement.
 #[command]
 pub fn run_robber(window: Window, config: ProcessConfig) -> Result<String, String> {
+    // Chemins source et racine de destination
     let src = PathBuf::from(&config.source);
     let dest_root = PathBuf::from(&config.destination);
 
-    // Détermine le chemin final
+    // Détermine le chemin final (sous-dossier ou racine)
     let dest = if config.create_subfolder {
         let name = if config.use_timestamp {
             Local::now().format("%Y%m%d_%H%M%S").to_string()
@@ -28,14 +28,14 @@ pub fn run_robber(window: Window, config: ProcessConfig) -> Result<String, Strin
                 .clone()
                 .unwrap_or_else(|| src.file_name().unwrap().to_string_lossy().into_owned())
         };
-        let p = dest_root.join(name);
-        fs::create_dir_all(&p).map_err(|e| e.to_string())?;
-        p
+        let folder = dest_root.join(name);
+        fs::create_dir_all(&folder).map_err(|e| e.to_string())?;
+        folder
     } else {
         dest_root
     };
 
-    // Services
+    // Service de copie / filtrage
     let fm = FileManager::new(vec![
         ".png".into(),
         ".jpg".into(),
@@ -48,13 +48,13 @@ pub fn run_robber(window: Window, config: ProcessConfig) -> Result<String, Strin
     // Copie initiale
     fm.copy_all(&src, &dest).map_err(|e| e.to_string())?;
 
-    // Prépare les paires (avec variantes si demandé)
+    // Prépare les paires, avec variantes si demandé
     let mut pairs = config.pairs.clone();
     if config.variants {
         pairs = TextService::expand_variants(&pairs);
     }
 
-    // Remplacement de texte avec progression
+    // Remplacement de texte avec émission de la progression
     let total = fm.count_eligible(&src) as u32;
     let mut processed = 0u32;
 
