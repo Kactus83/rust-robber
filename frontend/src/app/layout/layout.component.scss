@@ -1,0 +1,29 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Header */
+.layout-header {
+  background-color: #007acc;
+  color: #fff;
+  padding: 1rem;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* La zone principale prend tout l'espace disponible */
+.layout-main {
+  flex: 1;
+  padding: 2rem;
+  background: #f9f9f9;
+}
+
+/* Footer */
+.layout-footer {
+  background-color: #007acc;
+  color: #fff;
+  text-align: center;
+  padding: 0.75rem;
+}

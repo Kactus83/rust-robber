@@ -1,0 +1,60 @@
+<div class="step">
+    <h2>Configuration</h2>
+    <div class="error" *ngIf="error">{{ error }}</div>
+  
+    <fieldset>
+      <legend>Dossiers</legend>
+      <label>
+        Source :
+        <input type="text" [(ngModel)]="config.source" placeholder="Chemin source"/>
+      </label>
+      <label>
+        Destination :
+        <input type="text" [(ngModel)]="config.destination" placeholder="Chemin dest."/>
+      </label>
+      <label>
+        <input type="checkbox" [(ngModel)]="config.create_subfolder"/>
+        Créer un sous-dossier
+      </label>
+      <div *ngIf="config.create_subfolder">
+        <label>
+          Nom du dossier :
+          <input type="text" [(ngModel)]="config.folder_name" placeholder="(facultatif)"/>
+        </label>
+        <label>
+          <input type="checkbox" [(ngModel)]="config.use_timestamp"/>
+          Utiliser la date
+        </label>
+      </div>
+    </fieldset>
+  
+    <fieldset>
+      <legend>Paires de remplacement</legend>
+      <button (click)="addPair()">+ Ajouter</button>
+      <button (click)="generateVariants()">Générer variantes</button>
+      <div *ngFor="let wp of config.pairs; let i = index" class="pair-row">
+        <input [(ngModel)]="wp.old" placeholder="À remplacer"/>
+        →
+        <input [(ngModel)]="wp.new" placeholder="Par"/>
+        <button (click)="removePair(i)">✕</button>
+      </div>
+    </fieldset>
+  
+    <fieldset>
+      <legend>Options</legend>
+      <label>
+        <input type="checkbox" [(ngModel)]="config.variants"/>
+        Générer variantes de casse
+      </label>
+      <label>
+        <input type="checkbox" [(ngModel)]="config.rename"/>
+        Renommer fichiers et dossiers
+      </label>
+    </fieldset>
+  
+    <div class="buttons">
+      <button (click)="prev()">← Précédent</button>
+      <button [disabled]="!canProceed()" (click)="next()">Suivant →</button>
+    </div>
+  </div>
+  

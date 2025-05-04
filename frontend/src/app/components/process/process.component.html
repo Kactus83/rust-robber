@@ -1,0 +1,15 @@
+<div class="step">
+    <h2>Traitement en cours…</h2>
+  
+    <ng-container *ngIf="loading; else showError">
+      <progress [value]="progress" max="100"></progress>
+      <p>{{ progress }} %</p>
+      <p>Merci de patienter pendant l’exécution.</p>
+    </ng-container>
+  
+    <ng-template #showError>
+      <div class="error">Erreur : {{ error }}</div>
+      <button (click)="retry()">Réessayer</button>
+    </ng-template>
+  </div>
+  

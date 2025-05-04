@@ -1,0 +1,11 @@
+<div class="step">
+    <h2>Bienvenue dans Rust Robber !</h2>
+    <p>
+      Ce wizard vous guide pour copier un dossier,
+      remplacer du texte et renommer fichiers/dossiers.
+    </p>
+    <button [disabled]="loading" (click)="next()">
+      {{ loading ? 'Chargement…' : 'Commencer →' }}
+    </button>
+  </div>
+  

@@ -1,0 +1,6 @@
+.step { max-width: 800px; margin: auto; }
+.error { color: #c00; margin-bottom: 1em; }
+fieldset { margin: 1em 0; padding: 1em; border: 1px solid #ccc; }
+.pair-row { display: flex; gap: 0.5em; margin: 0.5em 0; }
+.buttons { display: flex; justify-content: space-between; margin-top: 1em; }
+button[disabled] { opacity: 0.5; cursor: not-allowed; }

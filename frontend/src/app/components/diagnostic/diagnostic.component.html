@@ -1,0 +1,29 @@
+<div class="step">
+    <h2>Analyse du projet (diagnostic)</h2>
+    <ng-container *ngIf="!report; else showReport">
+      <progress [value]="progress" max="100"></progress>
+      <p>{{ progress }} %</p>
+    </ng-container>
+  
+    <ng-template #showReport>
+      <h3>Rapport détaillé</h3>
+      <table>
+        <thead>
+          <tr><th>Chemin</th><th>Type</th><th>Termes trouvés</th></tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let e of report">
+            <td>{{ e.path }}</td>
+            <td>{{ e.is_dir ? 'Dossier' : 'Fichier' }}</td>
+            <td>
+              <span *ngFor="let m of e.matches">
+                {{ m.term }}<span *ngIf="m.count">({{ m.count }})</span>
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <button (click)="next()">Suivant →</button>
+    </ng-template>
+  </div>
+  
