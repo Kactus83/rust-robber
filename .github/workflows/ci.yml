@@ -2,42 +2,49 @@ name: CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
+      # 1. Checkout
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # 2. Rust toolchain
       - name: Install Rust toolchain
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
 
+      # 3. Node.js for frontend
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
 
-      - name: Install frontend dependencies and build
-        working-directory: ./src-tauri/frontend
+      # 4. Frontend: install, lint (optionnel), build
+      - name: Install & build frontend
+        working-directory: ./frontend
         run: |
-          npm install
+          npm ci
+          npm run lint      # si tu as une commande lint Angular
           npm run build
 
-      - name: Format check
+      # 5. Backend: format, lint, test
+      - name: Format check (Rust)
         run: cargo fmt -- --check
 
       - name: Lint with Clippy
         run: cargo clippy --all-targets --all-features -- -D warnings
 
-      - name: Run tests
+      - name: Run backend tests
         run: cargo test --all
 
-      - name: Build Tauri App (Release)
+      # 6. Build the Tauri app
+      - name: Build Tauri App (release)
         run: cargo tauri build --release
