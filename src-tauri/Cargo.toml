@@ -21,6 +21,7 @@ tempfile = "3.5.0"
 walkdir = "2.3"
 regex = "1.9"
 chrono = "0.4"
+tauri-plugin-dialog = "2.2.1"
 
 [[bin]]
 name = "setup-wizard"

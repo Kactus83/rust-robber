@@ -10,9 +10,11 @@ mod types;
 use tauri::Manager;
 use tauri_plugin_log::Builder;
 use commands::{robber::run_robber, diagnose::diagnose_robber};
+use tauri_plugin_dialog::DialogExt;
 
 fn main() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_dialog::init()) 
         .plugin(Builder::default().build())
         .invoke_handler(tauri::generate_handler![
             run_robber,

@@ -13,3 +13,15 @@ declare module '@tauri-apps/api' {
     export function invoke<T>(cmd: string, args?: Record<string, unknown>): Promise<T>;
   }
   
+/**
+ * Déclarations pour le module @tauri-apps/api/dialog
+ * qui expose notamment la fonction `open`.
+ */
+declare module '@tauri-apps/api/dialog' {
+  /**
+   * Ouvre une boîte de dialogue native.
+   * @param options.directory Si true, n’autorise que la sélection d’un dossier.
+   * @returns Le chemin sélectionné, ou null si annulé.
+   */
+  export function open(options: { directory: boolean }): Promise<string | string[] | null>;
+}

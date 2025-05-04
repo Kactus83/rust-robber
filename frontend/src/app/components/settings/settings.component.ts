@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
 import { WizardStateService } from '../../services/wizard-state.service';
+import { TauriService }         from '../../services/tauri.service';
 import { ProcessConfig, WordPair } from '../../types/models';
 
 @Component({
@@ -18,11 +19,12 @@ export class SettingsComponent implements OnInit, OnDestroy {
   config!: ProcessConfig;
   error = '';
   loadingSource = false;
-  loadingDest = false;
+  loadingDest   = false;
   private sub!: Subscription;
 
   constructor(
     private wizard: WizardStateService,
+    private tauri:  TauriService,
     private router: Router
   ) {}
 
@@ -36,33 +38,26 @@ export class SettingsComponent implements OnInit, OnDestroy {
     this.sub.unsubscribe();
   }
 
-  /** Ouvre le dialog Tauri pour choisir un dossier source */
   async selectSource() {
     this.loadingSource = true;
     try {
-      const { open } = await import('@tauri-apps/api/dialog');
-      const selected = (await open({ directory: true })) as string | null;
-      if (selected) {
-        this.config.source = selected;
-      }
-    } catch {
-      this.error = 'Impossible de sélectionner le dossier source.';
+      const path = await this.tauri.selectFolder();
+      if (path) this.config.source = path;
+    } catch (error) {
+      console.error('Erreur lors de la sélection du dossier source', error);
+      this.error = 'Erreur lors de la sélection du dossier source.';
     } finally {
       this.loadingSource = false;
     }
   }
 
-  /** Ouvre le dialog Tauri pour choisir un dossier destination */
   async selectDestination() {
     this.loadingDest = true;
     try {
-      const { open } = await import('@tauri-apps/api/dialog');
-      const selected = (await open({ directory: true })) as string | null;
-      if (selected) {
-        this.config.destination = selected;
-      }
+      const path = await this.tauri.selectFolder();
+      if (path) this.config.destination = path;
     } catch {
-      this.error = 'Impossible de sélectionner le dossier de destination.';
+      this.error = 'Erreur lors de la sélection du dossier de destination.';
     } finally {
       this.loadingDest = false;
     }
@@ -76,20 +71,20 @@ export class SettingsComponent implements OnInit, OnDestroy {
     this.config.pairs.splice(i, 1);
   }
 
-  /** Génère les variantes lower/upper pour toutes les paires actuelles */
+  /** Génère manuellement toutes les variantes lower/upper */
   generatePairsVariants() {
     const seen = new Set<string>();
     const out: WordPair[] = [];
     for (let wp of this.config.pairs) {
-      ['orig', 'lower', 'upper'].forEach(mode => {
-        const o = mode === 'lower'
+      ['orig','lower','upper'].forEach(mode => {
+        const o = mode==='lower'
           ? wp.old.toLowerCase()
-          : mode === 'upper'
+          : mode==='upper'
             ? wp.old.toUpperCase()
             : wp.old;
-        const n = mode === 'lower'
+        const n = mode==='lower'
           ? wp.new.toLowerCase()
-          : mode === 'upper'
+          : mode==='upper'
             ? wp.new.toUpperCase()
             : wp.new;
         const key = `${o}→${n}`;
@@ -102,7 +97,21 @@ export class SettingsComponent implements OnInit, OnDestroy {
     this.config.pairs = out;
   }
 
-  /** Validation minimale avant de passer à l’étape suivante */
+  /** Ajoute spécifiquement les paires Fuse→Robber si elles manquent */
+  addFuseRobberPairs() {
+    const defaults: WordPair[] = [
+      { old: 'Fuse', new: 'Robber' },
+      { old: 'fuse', new: 'robber' },
+      { old: 'FUSE', new: 'ROBBER' },
+    ];
+    for (const wp of defaults) {
+      const exists = this.config.pairs.some(
+        x => x.old === wp.old && x.new === wp.new
+      );
+      if (!exists) this.config.pairs.push(wp);
+    }
+  }
+
   canProceed(): boolean {
     return !!this.config.source
         && !!this.config.destination
@@ -112,18 +121,17 @@ export class SettingsComponent implements OnInit, OnDestroy {
 
   next() {
     if (!this.canProceed()) {
-      this.error = 'Source, destination et paires (Old/New) obligatoires.';
+      this.error = 'Source, destination et paires (old/new) obligatoires.';
       return;
     }
-    // Sauvegarde dans le state
     this.wizard.updateConfig({
-      source: this.config.source,
-      destination: this.config.destination,
+      source:           this.config.source,
+      destination:      this.config.destination,
       create_subfolder: this.config.create_subfolder,
-      folder_name: this.config.folder_name,
-      use_timestamp: this.config.use_timestamp,
-      variants: this.config.variants,
-      rename: this.config.rename
+      folder_name:      this.config.folder_name,
+      use_timestamp:    this.config.use_timestamp,
+      variants:         this.config.variants,
+      rename:           this.config.rename
     });
     this.wizard.setPairs(this.config.pairs);
     this.router.navigate(['/diagnose']);
