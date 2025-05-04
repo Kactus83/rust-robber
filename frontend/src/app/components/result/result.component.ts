@@ -13,6 +13,7 @@ import { WizardStateService } from '../../services/wizard-state.service';
   styleUrls: ['./result.component.scss']
 })
 export class ResultComponent implements OnInit, OnDestroy {
+  /** Message final à afficher */
   result = '';
   private sub!: Subscription;
 
@@ -21,6 +22,7 @@ export class ResultComponent implements OnInit, OnDestroy {
     private router: Router
   ) {}
 
+  /** S’abonne au résultat du wizard */
   ngOnInit() {
     this.sub = this.wizard.result$.subscribe(r => this.result = r || '');
   }
@@ -29,6 +31,7 @@ export class ResultComponent implements OnInit, OnDestroy {
     this.sub.unsubscribe();
   }
 
+  /** Retourne au début du wizard */
   finish() {
     this.router.navigate(['/onboarding']);
   }

@@ -48,6 +48,12 @@
 
       <div class="checkbox-row">
         <label>
+          <input type="checkbox" [(ngModel)]="config.rename" />
+          Renommer fichiers/dossiers
+        </label>
+      </div>
+      <div class="checkbox-row">
+        <label>
           <input type="checkbox" [(ngModel)]="config.create_subfolder" />
           Créer un sous-dossier
         </label>
@@ -92,33 +98,15 @@
         <button class="btn-remove" (click)="removePair(i)">✕</button>
       </div>
     </section>
+</div>
 
-    <!-- Carte Options avancées -->
-    <section class="card">
-      <h3>Options avancées</h3>
-      <div class="checkbox-row">
-        <label>
-          <input type="checkbox" [(ngModel)]="config.variants" />
-          Générer variantes de casse
-        </label>
-      </div>
-      <div class="checkbox-row">
-        <label>
-          <input type="checkbox" [(ngModel)]="config.rename" />
-          Renommer fichiers/dossiers
-        </label>
-      </div>
-    </section>
-  </div>
-
-  <div class="buttons">
-    <button class="btn-secondary" (click)="prev()">← Précédent</button>
-    <button
-      class="btn-primary"
-      [disabled]="!canProceed()"
-      (click)="next()"
-    >
-      Suivant →
-    </button>
-  </div>
+<div class="buttons">
+  <button class="btn-secondary" (click)="prev()">← Précédent</button>
+  <button
+    class="btn-primary"
+    [disabled]="!canProceed()"
+    (click)="next()"
+  >
+    Suivant →
+  </button>
 </div>

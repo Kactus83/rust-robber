@@ -1,6 +1,4 @@
-// src/app/components/diagnostic/diagnostic.component.ts
-
-import { Component, OnInit, OnDestroy, ChangeDetectorRef, NgZone } from '@angular/core';
+import { Component, OnInit, OnDestroy, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
@@ -41,38 +39,30 @@ export class DiagnosticComponent implements OnInit, OnDestroy {
     private wizard: WizardStateService,
     private tauri: TauriService,
     private router: Router,
-    private ngZone: NgZone,
-    private cd: ChangeDetectorRef
+    private ngZone: NgZone
   ) {}
 
   ngOnInit() {
     // Récupère la config en cours
     this.wizard.config$.subscribe(c => this.config = c);
 
-    // Écoute la progression
+    // Écoute la progression et force la détection de changements
     this.sub = this.tauri.diagnoseProgress$.subscribe(p => {
-      // Les événements Tauri arrivent hors zone Angular,
-      // on repasse dans la zone pour déclencher la détection de changements
       this.ngZone.run(() => {
         this.progress = p;
         this.wizard.setDiagnosticProgress(p);
       });
     });
 
-    // Démarre le diagnostic
+    // Démarre le diagnostic et construit l’arborescence
     this.tauri.diagnoseRobber(this.config)
       .then((r: DiagnosticEntry[]) => {
-        // Une fois le rapport complet reçu :
         this.ngZone.run(() => {
           this.report = r;
           this.treeData = this.buildTree(r);
           this.wizard.setDiagnostic(r);
-
-          // Filtrage automatique : ne garder que les chemins avec matches
-          const relPathsWithMatches = r
-            .filter(entry => entry.matches.length > 0)
-            .map(entry => entry.path);
-          this.wizard.updateConfig({ filter_paths: relPathsWithMatches });
+          const filtered = r.filter(e => e.matches.length > 0).map(e => e.path);
+          this.wizard.updateConfig({ filter_paths: filtered });
         });
       })
       .catch(err => {
@@ -86,7 +76,7 @@ export class DiagnosticComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Construit une arborescence triée à partir d’une liste plate.
+   * Construit une arborescence triée (dossiers avant fichiers).
    */
   private buildTree(entries: DiagnosticEntry[]): TreeNode[] {
     const roots: TreeNode[] = [];
@@ -106,7 +96,7 @@ export class DiagnosticComponent implements OnInit, OnDestroy {
           node = {
             name: seg,
             path: currentPath,
-            is_dir: !isLeaf ? true : entry.is_dir,
+            is_dir: !isLeaf || entry.is_dir,
             matches: isLeaf ? entry.matches : [],
             children: [],
             expanded: false,
@@ -119,7 +109,6 @@ export class DiagnosticComponent implements OnInit, OnDestroy {
       });
     });
 
-    // Trie dossiers avant fichiers, puis alpha, récursivement
     const sortRec = (nodes: TreeNode[]) => {
       nodes.sort((a, b) =>
         a.is_dir === b.is_dir
@@ -134,7 +123,7 @@ export class DiagnosticComponent implements OnInit, OnDestroy {
     return roots;
   }
 
-  /** Fixe la profondeur pour l’indentation */
+  /** Attribue un niveau pour l’indentation */
   private setLevels(nodes: TreeNode[], lvl: number) {
     nodes.forEach(n => {
       n.level = lvl;
@@ -147,7 +136,12 @@ export class DiagnosticComponent implements OnInit, OnDestroy {
     node.expanded = !node.expanded;
   }
 
-  /** Navigue à la phase de traitement */
+  /** Retourne à la configuration */
+  back() {
+    this.router.navigate(['/settings']);
+  }
+
+  /** Passe à l’étape suivante */
   next() {
     this.router.navigate(['/process']);
   }

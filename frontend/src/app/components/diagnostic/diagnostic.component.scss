@@ -8,7 +8,17 @@
   animation: fadeIn 0.6s ease both;
 }
 
-/* Barre de progression stylée */
+.report-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.report-header h3 {
+  margin: 0;
+  color: var(--color-accent);
+}
+
 .progress-container {
   display: flex;
   align-items: center;
@@ -21,15 +31,17 @@ progress {
   border: none;
   border-radius: 0.5em;
 }
+
 progress::-webkit-progress-bar { background: var(--color-surface); }
 progress::-webkit-progress-value { background: var(--color-accent); }
+
 .progress-container p {
   width: 3rem;
   margin: 0;
   text-align: right;
+  font-weight: bold;
 }
 
-/* Arborescence */
 .tree {
   list-style: none;
   margin: 1rem 0;
@@ -40,21 +52,15 @@ progress::-webkit-progress-value { background: var(--color-accent); }
   align-items: center;
   gap: 0.5rem;
   padding: 0.25rem 0;
-  cursor: default;
   transition: background 0.2s ease;
 }
 .node:hover {
   background: rgba(255,255,255,0.1);
 }
-.toggle {
+.toggle, .icon {
   width: 1.2rem;
   text-align: center;
-  user-select: none;
   cursor: pointer;
-}
-.icon {
-  width: 1.2rem;
-  text-align: center;
 }
 .name {
   font-weight: 500;
@@ -73,8 +79,9 @@ progress::-webkit-progress-value { background: var(--color-accent); }
   font-size: 0.85rem;
 }
 
-/* Bouton suivant */
-button {
+.buttons {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
   margin-top: 1rem;
-  float: right;
 }
