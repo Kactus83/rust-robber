@@ -1,45 +1,142 @@
 .step {
-    max-width: 800px;
-    margin: auto;
-  }
-  .error {
-    color: #c00;
-    margin-bottom: 1em;
-  }
-  fieldset {
-    margin: 1em 0;
-    padding: 1em;
-    border: 1px solid #ccc;
-  }
-  .dir-row {
-    display: flex;
-    align-items: center;
-    gap: 0.5em;
-    margin-bottom: 0.5em;
-  }
-  .dir-row input {
-    flex: 1;
-  }
-  .subfolder-options {
-    margin-left: 1.5em;
-  }
-  .pair-controls {
-    display: flex;
-    gap: 0.5em;
-    margin-bottom: 0.5em;
-  }
-  .pair-row {
-    display: flex;
-    gap: 0.5em;
-    margin: 0.5em 0;
-  }
-  .buttons {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 1em;
-  }
-  button[disabled] {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-  
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+  animation: fadeIn 0.6s ease both;
+}
+
+h2 {
+  text-align: center;
+  color: var(--color-primary);
+  margin-bottom: 1rem;
+}
+
+.error-card {
+  background: #ffebee;
+  color: #b71c1c;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 4px rgba(183,28,28,0.4);
+}
+
+/* Grille pour les cartes */
+.config-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.card {
+  background: var(--color-surface);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+  transition: transform 0.3s ease;
+}
+.card:hover {
+  transform: translateY(-4px);
+}
+
+.card h3 {
+  margin-top: 0;
+  color: var(--color-accent);
+  font-size: 1.25rem;
+  margin-bottom: 0.75rem;
+}
+
+/* Lignes dossier */
+.dir-row,
+.field {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+.dir-row label,
+.field label {
+  width: 100px;
+  font-weight: 500;
+}
+.input-group {
+  flex: 1;
+  display: flex;
+  gap: 0.5rem;
+}
+.input-group input {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid #555;
+  border-radius: 0.4rem;
+  background: #1e1e1e;
+  color: #eee;
+  transition: border-color 0.2s ease;
+}
+.input-group input:focus {
+  border-color: var(--color-primary);
+  outline: none;
+}
+
+/* Cases à cocher */
+.checkbox-row {
+  margin-bottom: 0.75rem;
+}
+.checkbox-row label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+}
+
+/* Options de sous-dossier */
+.subfolder-options {
+  padding-left: 1rem;
+  border-left: 2px dotted var(--color-accent);
+  margin-bottom: 0.75rem;
+}
+
+/* Paires de remplacement */
+.pair-controls {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+.pair-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+.pair-row input {
+  flex: 1;
+  padding: 0.4rem;
+  border: 1px solid #555;
+  border-radius: 0.3rem;
+  background: #1e1e1e;
+  color: #eee;
+}
+.arrow {
+  color: var(--color-accent);
+  font-weight: bold;
+}
+.btn-remove {
+  background: transparent;
+  border: none;
+  color: #ff5252;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+.btn-remove:hover {
+  transform: scale(1.2);
+}
+
+/* Boutons bas de page */
+.buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1.5rem;
+}
+.buttons button[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

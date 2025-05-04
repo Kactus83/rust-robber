@@ -3,9 +3,7 @@ import { RouterModule } from '@angular/router';
 
 /**
  * Composant de layout principal.
- *
- * Fournit une structure de base avec un header, une zone principale (router-outlet)
- * et un footer. Utilisé pour encadrer l'ensemble du wizard.
+ * Fournit un header animé, une zone principale (router-outlet) et un footer ludique.
  */
 @Component({
   selector: 'app-layout',

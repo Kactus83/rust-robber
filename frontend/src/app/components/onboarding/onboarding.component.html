@@ -1,11 +1,21 @@
 <div class="step">
-    <h2>Bienvenue dans Rust Robber !</h2>
-    <p>
-      Ce wizard vous guide pour copier un dossier,
-      remplacer du texte et renommer fichiers/dossiers.
-    </p>
-    <button [disabled]="loading" (click)="next()">
-      {{ loading ? 'Chargement…' : 'Commencer →' }}
-    </button>
-  </div>
-  
+  <img src="/logo/rust-robber-logo.png" alt="Rust Robber Logo" class="logo" />
+  <h2 class="title">Bienvenue dans <span>Rust Robber!</span></h2>
+  <p class="subtitle">
+    « De la Python-script à l’Angular-art »  
+    <em>(on remercie Pip, notre ami développeur Python… mais son script était trop cool !)</em>
+  </p>
+  <p class="description">
+    À l’origine, ce petit bijou en Python a été créé pour renommer des projets entiers selon les goûts de son auteur.  
+    Pour le fun, je l’ai remasterisé en Angular, avec un thème flamboyant « Rust Robber »,  
+    histoire que vos projets changent d’identité aussi vite qu’un voleur au pays des rouilles !  
+    Spéciale dédicace à tous ceux qui utilisent ce « template Angular bien connu » : vous voilà servis 😉
+  </p>
+  <button
+    class="btn-primary"
+    [disabled]="loading"
+    (click)="next()"
+  >
+    {{ loading ? 'Préparation…' : 'Allons-y ! →' }}
+  </button>
+</div>

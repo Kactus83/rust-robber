@@ -1,70 +1,124 @@
 <div class="step">
   <h2>Configuration</h2>
-  <div class="error" *ngIf="error">{{ error }}</div>
 
-  <fieldset>
-    <legend>Dossiers</legend>
-    <label class="dir-row">
-      <span>Source :</span>
-      <input type="text" [(ngModel)]="config.source" readonly/>
-      <button (click)="selectSource()" [disabled]="loadingSource">
-        {{ loadingSource ? '…' : 'Sélectionner' }}
-      </button>
-    </label>
+  <div *ngIf="error" class="error-card">
+    ⚠️ {{ error }}
+  </div>
 
-    <label class="dir-row">
-      <span>Destination :</span>
-      <input type="text" [(ngModel)]="config.destination" readonly/>
-      <button (click)="selectDestination()" [disabled]="loadingDest">
-        {{ loadingDest ? '…' : 'Sélectionner' }}
-      </button>
-    </label>
+  <div class="config-grid">
+    <!-- Carte Dossiers -->
+    <section class="card">
+      <h3>Dossiers</h3>
+      <div class="dir-row">
+        <label>Source :</label>
+        <div class="input-group">
+          <input
+            type="text"
+            [(ngModel)]="config.source"
+            readonly
+            placeholder="Aucun dossier sélectionné"
+          />
+          <button
+            class="btn-secondary"
+            (click)="selectSource()"
+            [disabled]="loadingSource"
+          >
+            {{ loadingSource ? '…' : 'Sélectionner' }}
+          </button>
+        </div>
+      </div>
+      <div class="dir-row">
+        <label>Destination :</label>
+        <div class="input-group">
+          <input
+            type="text"
+            [(ngModel)]="config.destination"
+            readonly
+            placeholder="Aucun dossier sélectionné"
+          />
+          <button
+            class="btn-secondary"
+            (click)="selectDestination()"
+            [disabled]="loadingDest"
+          >
+            {{ loadingDest ? '…' : 'Sélectionner' }}
+          </button>
+        </div>
+      </div>
 
-    <label>
-      <input type="checkbox" [(ngModel)]="config.create_subfolder"/>
-      Créer un sous-dossier
-    </label>
-    <div *ngIf="config.create_subfolder" class="subfolder-options">
-      <label>
-        Nom du dossier :
-        <input type="text" [(ngModel)]="config.folder_name" placeholder="(facultatif)"/>
-      </label>
-      <label>
-        <input type="checkbox" [(ngModel)]="config.use_timestamp"/>
-        Utiliser la date
-      </label>
-    </div>
-  </fieldset>
+      <div class="checkbox-row">
+        <label>
+          <input type="checkbox" [(ngModel)]="config.create_subfolder" />
+          Créer un sous-dossier
+        </label>
+      </div>
+      <div *ngIf="config.create_subfolder" class="subfolder-options">
+        <div class="field">
+          <label>Nom du dossier :</label>
+          <input
+            type="text"
+            [(ngModel)]="config.folder_name"
+            placeholder="(facultatif)"
+          />
+        </div>
+        <div class="checkbox-row">
+          <label>
+            <input type="checkbox" [(ngModel)]="config.use_timestamp" />
+            Utiliser la date
+          </label>
+        </div>
+      </div>
+    </section>
 
-  <fieldset>
-    <legend>Paires de remplacement</legend>
-    <div class="pair-controls">
-      <button (click)="addPair()">+ Ajouter une paire</button>
-      <button (click)="addFuseRobberPairs()">Ajouter paires Fuse→Robber</button>
-      <button (click)="generatePairsVariants()">Générer variantes</button>
-    </div>
-    <div *ngFor="let wp of config.pairs; let i = index" class="pair-row">
-      <input [(ngModel)]="wp.old" placeholder="À remplacer"/>
-      →
-      <input [(ngModel)]="wp.new" placeholder="Par"/>
-      <button (click)="removePair(i)">✕</button>
-    </div>
-  </fieldset>
+    <!-- Carte Paires -->
+    <section class="card">
+      <h3>Paires de remplacement</h3>
+      <div class="pair-controls">
+        <button class="btn-secondary" (click)="addPair()">+ Ajouter</button>
+        <button class="btn-secondary" (click)="addFuseRobberPairs()">
+          Fuse→Robber
+        </button>
+        <button class="btn-secondary" (click)="generatePairsVariants()">
+          Variantes
+        </button>
+      </div>
+      <div *ngFor="let wp of config.pairs; let i = index" class="pair-row">
+        <input
+          [(ngModel)]="wp.old"
+          placeholder="À remplacer"
+        />
+        <span class="arrow">→</span>
+        <input [(ngModel)]="wp.new" placeholder="Par" />
+        <button class="btn-remove" (click)="removePair(i)">✕</button>
+      </div>
+    </section>
 
-  <fieldset>
-    <legend>Options avancées</legend>
-    <label>
-      <input type="checkbox" [(ngModel)]="config.variants"/>
-      Générer automatiquement variantes de casse (lower/UPPER)
-    </label>
-    <label>
-      <input type="checkbox" [(ngModel)]="config.rename"/>
-      Renommer fichiers et dossiers
-    </label>
-  </fieldset>
+    <!-- Carte Options avancées -->
+    <section class="card">
+      <h3>Options avancées</h3>
+      <div class="checkbox-row">
+        <label>
+          <input type="checkbox" [(ngModel)]="config.variants" />
+          Générer variantes de casse
+        </label>
+      </div>
+      <div class="checkbox-row">
+        <label>
+          <input type="checkbox" [(ngModel)]="config.rename" />
+          Renommer fichiers/dossiers
+        </label>
+      </div>
+    </section>
+  </div>
 
   <div class="buttons">
-    <button (click)="prev()">← Précédent</button>
-    <button [disabled]="!canProceed()" (click)="next()">Suivant →</button>
+    <button class="btn-secondary" (click)="prev()">← Précédent</button>
+    <button
+      class="btn-primary"
+      [disabled]="!canProceed()"
+      (click)="next()"
+    >
+      Suivant →
+    </button>
   </div>
 </div>

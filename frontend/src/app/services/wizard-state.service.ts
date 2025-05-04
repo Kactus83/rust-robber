@@ -14,6 +14,7 @@ export class WizardStateService {
     variants: false,
     rename: false,
     pairs: []
+    // filter_paths sera ajouté dynamiquement après le diagnostic
   });
   config$ = this.configSource.asObservable();
 

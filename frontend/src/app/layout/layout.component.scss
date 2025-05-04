@@ -6,24 +6,49 @@
 
 /* Header */
 .layout-header {
-  background-color: #007acc;
-  color: #fff;
-  padding: 1rem;
-  text-align: center;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
+  padding: 1rem 2rem;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  animation: slideDown 0.5s ease both;
 }
 
-/* La zone principale prend tout l'espace disponible */
+.layout-logo {
+  width: 40px;
+  animation: beat 1s ease-in-out infinite alternate;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-100%); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+@keyframes beat {
+  from { transform: scale(1);   }
+  to   { transform: scale(1.2); }
+}
+
+/* Main */
 .layout-main {
   flex: 1;
   padding: 2rem;
-  background: #f9f9f9;
+  background: var(--color-bg);
+  transition: background 0.3s ease;
 }
 
 /* Footer */
 .layout-footer {
-  background-color: #007acc;
-  color: #fff;
+  background-color: var(--color-surface);
+  color: var(--color-on-surface);
   text-align: center;
-  padding: 0.75rem;
+  padding: 1rem;
+  font-size: 0.9rem;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  animation: fadeIn 0.8s ease both;
 }

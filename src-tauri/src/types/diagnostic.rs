@@ -3,7 +3,7 @@
 use serde::{Deserialize, Serialize};
 
 /// Représente un dossier ou un fichier analysé.
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct DiagnosticEntry {
     /// Chemin relatif à la source
     pub path: String,
@@ -16,7 +16,7 @@ pub struct DiagnosticEntry {
 }
 
 /// Détail d’une correspondance d’un terme.
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct MatchInfo {
     /// Terme tel quel (avant variantes)
     pub term: String,

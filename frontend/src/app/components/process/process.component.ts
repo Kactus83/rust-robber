@@ -32,6 +32,7 @@ export class ProcessComponent implements OnInit, OnDestroy {
 
     this.sub = this.tauri.runProgress$.subscribe(p => {
       this.progress = p;
+      console.log('Progression:', p);
       this.wizard.setRunProgress(p);
     });
 

@@ -1,29 +1,72 @@
 <div class="step">
-    <h2>Analyse du projet (diagnostic)</h2>
-    <ng-container *ngIf="!report; else showReport">
+  <h2>Analyse du projet (diagnostic)</h2>
+
+  <ng-container *ngIf="!report; else reportTpl">
+    <div class="progress-container">
       <progress [value]="progress" max="100"></progress>
       <p>{{ progress }} %</p>
-    </ng-container>
-  
-    <ng-template #showReport>
-      <h3>Rapport détaillé</h3>
-      <table>
-        <thead>
-          <tr><th>Chemin</th><th>Type</th><th>Termes trouvés</th></tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let e of report">
-            <td>{{ e.path }}</td>
-            <td>{{ e.is_dir ? 'Dossier' : 'Fichier' }}</td>
-            <td>
-              <span *ngFor="let m of e.matches">
+    </div>
+  </ng-container>
+
+  <ng-template #reportTpl>
+    <h3>Rapport détaillé</h3>
+    <ul class="tree">
+      <ng-container *ngFor="let node of treeData">
+        <li>
+          <div class="node" [style.paddingLeft.px]="node.level * 20">
+            <span 
+              *ngIf="node.is_dir" 
+              class="toggle" 
+              (click)="toggle(node)"
+            >
+              {{ node.expanded ? '▼' : '▶' }}
+            </span>
+            <span class="icon">
+              {{ node.is_dir ? '📁' : '📄' }}
+            </span>
+            <span class="name">{{ node.name }}</span>
+            <span *ngIf="!node.is_dir" class="matches">
+              <ng-container *ngFor="let m of node.matches">
+                <span class="match">
+                  {{ m.term }}<span *ngIf="m.count">({{ m.count }})</span>
+                </span>
+              </ng-container>
+            </span>
+          </div>
+          <ul *ngIf="node.is_dir && node.expanded">
+            <ng-container 
+              *ngTemplateOutlet="nodeTpl; context: { nodes: node.children }"
+            ></ng-container>
+          </ul>
+        </li>
+      </ng-container>
+    </ul>
+    <button class="btn-primary" (click)="next()">Suivant →</button>
+  </ng-template>
+
+  <ng-template #nodeTpl let-nodes="nodes">
+    <ng-container *ngFor="let child of nodes">
+      <li>
+        <div class="node" [style.paddingLeft.px]="child.level * 20">
+          <span *ngIf="child.is_dir" class="toggle" (click)="toggle(child)">
+            {{ child.expanded ? '▼' : '▶' }}
+          </span>
+          <span class="icon">{{ child.is_dir ? '📁' : '📄' }}</span>
+          <span class="name">{{ child.name }}</span>
+          <span *ngIf="!child.is_dir" class="matches">
+            <ng-container *ngFor="let m of child.matches">
+              <span class="match">
                 {{ m.term }}<span *ngIf="m.count">({{ m.count }})</span>
               </span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <button (click)="next()">Suivant →</button>
-    </ng-template>
-  </div>
-  
+            </ng-container>
+          </span>
+        </div>
+        <ul *ngIf="child.is_dir && child.expanded">
+          <ng-container 
+            *ngTemplateOutlet="nodeTpl; context: { nodes: child.children }"
+          ></ng-container>
+        </ul>
+      </li>
+    </ng-container>
+  </ng-template>
+</div>

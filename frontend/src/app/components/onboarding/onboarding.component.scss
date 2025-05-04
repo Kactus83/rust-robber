@@ -1,8 +1,45 @@
 .step {
-    max-width: 600px; margin: auto; text-align: center;
-  }
-  button {
-    margin-top: 1em;
-    padding: 0.5em 1em;
-  }
-  
+  max-width: 720px;
+  margin: 2rem auto;
+  text-align: center;
+  background: var(--color-surface);
+  padding: 2.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.7);
+  animation: fadeIn 0.6s ease both;
+}
+
+.logo {
+  width: 100px;
+  margin-bottom: 1rem;
+  animation: rotateIn 0.8s ease both;
+}
+
+.title {
+  font-size: 2.2rem;
+  margin: 0.5rem 0;
+  color: var(--color-primary);
+}
+.title span {
+  display: inline-block;
+  animation: scalePulse 1.2s ease-in-out infinite both;
+}
+
+.subtitle {
+  font-size: 0.9rem;
+  color: var(--color-on-surface);
+  margin-bottom: 1rem;
+  font-style: italic;
+  opacity: 0.8;
+}
+
+.description {
+  font-size: 1rem;
+  margin: 1rem 0 1rem;
+  color: var(--color-on-surface);
+  line-height: 1.4;
+}
+
+button {
+  margin-top: 1em;
+}
