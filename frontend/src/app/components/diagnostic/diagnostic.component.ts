@@ -1,4 +1,6 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+// src/app/components/diagnostic/diagnostic.component.ts
+
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
@@ -38,7 +40,9 @@ export class DiagnosticComponent implements OnInit, OnDestroy {
   constructor(
     private wizard: WizardStateService,
     private tauri: TauriService,
-    private router: Router
+    private router: Router,
+    private ngZone: NgZone,
+    private cd: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
@@ -47,24 +51,29 @@ export class DiagnosticComponent implements OnInit, OnDestroy {
 
     // Écoute la progression
     this.sub = this.tauri.diagnoseProgress$.subscribe(p => {
-      this.progress = p;
-      this.wizard.setDiagnosticProgress(p);
+      // Les événements Tauri arrivent hors zone Angular,
+      // on repasse dans la zone pour déclencher la détection de changements
+      this.ngZone.run(() => {
+        this.progress = p;
+        this.wizard.setDiagnosticProgress(p);
+      });
     });
 
-    // Lance le diagnostic et construit l’arbre
+    // Démarre le diagnostic
     this.tauri.diagnoseRobber(this.config)
       .then((r: DiagnosticEntry[]) => {
-        this.report = r;
-        this.treeData = this.buildTree(r);
-        this.wizard.setDiagnostic(r);
+        // Une fois le rapport complet reçu :
+        this.ngZone.run(() => {
+          this.report = r;
+          this.treeData = this.buildTree(r);
+          this.wizard.setDiagnostic(r);
 
-        // =========== FILTRAGE pour ne garder QUE les chemins avec matches ==========
-        const relPathsWithMatches = r
-          .filter(entry => entry.matches.length > 0)
-          .map(entry => entry.path);
-
-        this.wizard.updateConfig({ filter_paths: relPathsWithMatches });
-
+          // Filtrage automatique : ne garder que les chemins avec matches
+          const relPathsWithMatches = r
+            .filter(entry => entry.matches.length > 0)
+            .map(entry => entry.path);
+          this.wizard.updateConfig({ filter_paths: relPathsWithMatches });
+        });
       })
       .catch(err => {
         console.error('Erreur diagnostic:', err);
@@ -81,9 +90,8 @@ export class DiagnosticComponent implements OnInit, OnDestroy {
    */
   private buildTree(entries: DiagnosticEntry[]): TreeNode[] {
     const roots: TreeNode[] = [];
-    const map: { [path: string]: TreeNode } = {};
+    const map: Record<string, TreeNode> = {};
 
-    // Crée chaque nœud et l’insère au bon endroit
     entries.forEach(entry => {
       const norm = entry.path.replace(/\\/g, '/');
       const parts = norm.split('/');
@@ -98,7 +106,7 @@ export class DiagnosticComponent implements OnInit, OnDestroy {
           node = {
             name: seg,
             path: currentPath,
-            is_dir: isLeaf ? entry.is_dir : true,
+            is_dir: !isLeaf ? true : entry.is_dir,
             matches: isLeaf ? entry.matches : [],
             children: [],
             expanded: false,
@@ -111,7 +119,7 @@ export class DiagnosticComponent implements OnInit, OnDestroy {
       });
     });
 
-    // Trie récursif (dossiers ↑, fichiers ↓, alpha)
+    // Trie dossiers avant fichiers, puis alpha, récursivement
     const sortRec = (nodes: TreeNode[]) => {
       nodes.sort((a, b) =>
         a.is_dir === b.is_dir
@@ -126,7 +134,7 @@ export class DiagnosticComponent implements OnInit, OnDestroy {
     return roots;
   }
 
-  /** Assigne la propriété `level` pour gérer l’indentation */
+  /** Fixe la profondeur pour l’indentation */
   private setLevels(nodes: TreeNode[], lvl: number) {
     nodes.forEach(n => {
       n.level = lvl;
@@ -139,7 +147,7 @@ export class DiagnosticComponent implements OnInit, OnDestroy {
     node.expanded = !node.expanded;
   }
 
-  /** Passe à l’étape suivante */
+  /** Navigue à la phase de traitement */
   next() {
     this.router.navigate(['/process']);
   }

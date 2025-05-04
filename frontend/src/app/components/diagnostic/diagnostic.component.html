@@ -1,6 +1,7 @@
 <div class="step">
   <h2>Analyse du projet (diagnostic)</h2>
 
+  <!-- Barre de progression jusqu’à ce que `report` soit disponible -->
   <ng-container *ngIf="!report; else reportTpl">
     <div class="progress-container">
       <progress [value]="progress" max="100"></progress>
@@ -8,15 +9,16 @@
     </div>
   </ng-container>
 
+  <!-- Une fois le rapport reçu -->
   <ng-template #reportTpl>
     <h3>Rapport détaillé</h3>
     <ul class="tree">
       <ng-container *ngFor="let node of treeData">
         <li>
           <div class="node" [style.paddingLeft.px]="node.level * 20">
-            <span 
-              *ngIf="node.is_dir" 
-              class="toggle" 
+            <span
+              *ngIf="node.is_dir"
+              class="toggle"
               (click)="toggle(node)"
             >
               {{ node.expanded ? '▼' : '▶' }}
@@ -34,13 +36,14 @@
             </span>
           </div>
           <ul *ngIf="node.is_dir && node.expanded">
-            <ng-container 
+            <ng-container
               *ngTemplateOutlet="nodeTpl; context: { nodes: node.children }"
             ></ng-container>
           </ul>
         </li>
       </ng-container>
     </ul>
+
     <button class="btn-primary" (click)="next()">Suivant →</button>
   </ng-template>
 
@@ -48,10 +51,16 @@
     <ng-container *ngFor="let child of nodes">
       <li>
         <div class="node" [style.paddingLeft.px]="child.level * 20">
-          <span *ngIf="child.is_dir" class="toggle" (click)="toggle(child)">
+          <span
+            *ngIf="child.is_dir"
+            class="toggle"
+            (click)="toggle(child)"
+          >
             {{ child.expanded ? '▼' : '▶' }}
           </span>
-          <span class="icon">{{ child.is_dir ? '📁' : '📄' }}</span>
+          <span class="icon">
+            {{ child.is_dir ? '📁' : '📄' }}
+          </span>
           <span class="name">{{ child.name }}</span>
           <span *ngIf="!child.is_dir" class="matches">
             <ng-container *ngFor="let m of child.matches">
@@ -62,7 +71,7 @@
           </span>
         </div>
         <ul *ngIf="child.is_dir && child.expanded">
-          <ng-container 
+          <ng-container
             *ngTemplateOutlet="nodeTpl; context: { nodes: child.children }"
           ></ng-container>
         </ul>
