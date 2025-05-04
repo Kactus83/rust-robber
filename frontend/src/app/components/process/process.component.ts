@@ -48,6 +48,7 @@ export class ProcessComponent implements OnInit, OnDestroy {
     this.progressSub = this.tauri.runProgress$.subscribe(p => {
       this.ngZone.run(() => {
         this.progress = p;
+        console.log('Progression:', p);
         this.wizard.setRunProgress(p);
       });
     });
