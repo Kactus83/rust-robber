@@ -14,5 +14,5 @@ import { RouterOutlet } from '@angular/router';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  title = 'setup-wizard-angular';
+  title = 'Very Fast Robber';
 }

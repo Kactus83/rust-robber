@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "setup-wizard-angular": {
+    "vf-robber-angular": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/setup-wizard-angular",
+            "outputPath": "dist/vf-robber-angular",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
@@ -64,10 +64,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "setup-wizard-angular:build:production"
+              "buildTarget": "vf-robber-angular:build:production"
             },
             "development": {
-              "buildTarget": "setup-wizard-angular:build:development"
+              "buildTarget": "vf-robber-angular:build:development"
             }
           },
           "defaultConfiguration": "development"

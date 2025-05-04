@@ -130,7 +130,7 @@ fn diagnose_task(
             let pct = (processed * 100) / total;
 
             // Émet tous les 5 % (et à 100 %)
-            if pct == 100 || pct % 5 == 0 {
+            if pct == 100 || pct % 1 == 0 {
                 let mut last = last_pct.lock().unwrap();
                 if *last != pct {
                     let _ = window_arc.emit("diagnose-progress", pct);

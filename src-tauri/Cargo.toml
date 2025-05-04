@@ -1,5 +1,5 @@
 [package]
-name = "project-robber"
+name = "vf-robber"
 version = "0.1.0"
 edition = "2024"
 
@@ -26,5 +26,5 @@ rayon = "1.7"
 
 
 [[bin]]
-name = "setup-wizard"
+name = "vf-robber"
 path = "src/main.rs"
