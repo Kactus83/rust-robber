@@ -24,18 +24,32 @@ Il permet de :
      ```
 
 3. **Tauri prerequisites**  
-   - Windows : 
-     - Installez Visual Studio 2022 (Desktop workload C/C++), 
-     - GTK (via MSYS2).  
-   - macOS :  
-     ```bash
-     brew install gtk+3 libappindicator
-     ```
-   - Linux (Ubuntu/Debian) :  
-     ```bash
-     sudo apt update
-     sudo apt install libwebkit2gtk-4.0-dev libgtk-3-dev build-essential curl
-     ```
+   - Windows :
+       1. Télécharger Visual Studio Build Tools                                                                                                          
+          - Allez sur https://visualstudio.microsoft.com/downloads/                                                                                       
+          - Sous "Tools for Visual Studio", téléchargez "Build Tools for Visual Studio 2022"
+       2. Installer les composants C++                                                                                                                   
+          - Lancez l'installateur                                                                                                                         
+          - Sélectionnez "Desktop development with C++" (Développement Desktop avec C++)                                                                  
+          - Dans les détails d'installation à droite, assurez-vous que ces éléments sont cochés :
+          - MSVC v143 - VS 2022 C++ x64/x86 build tools
+       3. Download https://www.msys2.org/ et ouvrir MSYS2 UCRT64: 
+            - ```bash
+                pacman -Syu
+                pacman -S mingw-w64-ucrt-x86_64-pkg-config
+                pacman -S mingw-w64-ucrt-x86_64-gtk3
+                pkg-config --version
+                pkg-config --modversion gtk+-3.0
+                ```
+          - macOS :  
+            ```bash
+            brew install gtk+3 libappindicator
+            ```
+          - Linux (Ubuntu/Debian) :  
+            ```bash
+            sudo apt update
+            sudo apt install libwebkit2gtk-4.0-dev libgtk-3-dev build-essential curl
+            ```
 
 4. **Angular CLI** (option : recommandé)  
    ```bash
