@@ -97,9 +97,9 @@ Le dev-server Angular écoute par défaut sur http://localhost:4200.
 Ouvrez un autre terminal pointant sur `src-tauri` (MSYS2 sous Windows) :
 
 ```bash
-cd src-tauri
+cd ./
 npm install            # installe @tauri-apps/api
-tauri dev
+cargo tauri dev
 ```
 
 > **Note** : `tauri dev` compile le binaire Rust en dev, puis lance la fenêtre Tauri pointant sur http://localhost:4200.
